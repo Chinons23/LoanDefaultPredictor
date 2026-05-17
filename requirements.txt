@@ -1,0 +1,8 @@
+scikit-learn
+streamlit
+jupyter
+pandas
+numpy
+zenml[server]
+zenml[integrations]sklearn
+joblib
