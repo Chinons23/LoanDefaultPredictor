@@ -2,15 +2,16 @@ import logging
 import numpy as np
 import pandas as pd
 from abc import ABC, abstractmethod
-from typing import Union
+from typing import Tuple
 from sklearn.model_selection import train_test_split
+
 
 
 class DataStrategy(ABC):
     """Data Strategy class for defining how to handle data."""
 
     @abstractmethod
-    def treat_data(self, data: pd.DataFrame) -> Union[pd.DataFrame, pd.Series]:
+    def treat_data(self, data: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
         pass
 
 
@@ -29,10 +30,10 @@ class DataPreprocessing(DataStrategy):
         Returns:
             data: A clean data ready
         """
-
+        
         try:
             logging.info("Dropping irrelevant columns.")
-            data = data.drop(['purpose'], axis=1)
+            data = data.drop(['purpose'], axis=1, errors='ignore')
             logging.info(f"Columns dropped. Remaining columns: {list(data.columns)}")
             return data
         except Exception as e:
@@ -45,7 +46,7 @@ class DataSplitStrategy(DataStrategy):
     Strategy class to split data
     """
 
-    def treat_data(self, data: pd.DataFrame) -> Union[pd.DataFrame, pd.Series]:
+    def treat_data(self, data: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
         """
         Split the give data into training and testing set.
 
@@ -68,7 +69,7 @@ class DataSplitStrategy(DataStrategy):
                                                                 stratify=y,
                                                                 random_state=42)
             logging.info(
-                f"Successfully splitted into train data {X_train.shape, y_train.shape}",
+                f"Successfully splitted into train data {X_train.shape, y_train.shape},"
                 f"and test data {X_test.shape, y_test.shape}."
                 )
             
@@ -91,7 +92,7 @@ class ProcessStrategy:
         self.data = data
         self.strategy = strategy
 
-    def treat_data(self) -> Union[pd.DataFrame, pd.Series]:
+    def treat_data(self) -> Tuple[pd.DataFrame, pd.Series]:
         """
         Executes the assigned data strategy on the input data
         """
